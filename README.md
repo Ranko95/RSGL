@@ -1,2 +1,2 @@
 # RSGL
-Simplified OpenGL from scratch written in Rust
+Simplified Graphic library from scratch written in Rust
