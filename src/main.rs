@@ -1,4 +1,7 @@
-use rsgl::{ TGAColor, TGAImage };
+mod image;
+mod model;
+
+use image::{ TGAColor, TGAImage };
 
 fn main() {
     const RED: TGAColor = TGAColor(255, 0, 0, 255);

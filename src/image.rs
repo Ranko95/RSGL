@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::Write;
-use std::{ slice, mem, io };
+use std::{ slice, mem };
+use std::io::{ self };
+use std::path::Path;
 
 #[derive(Copy, Clone, Debug)]
 pub struct TGAColor(pub u8, pub u8, pub u8, pub u8);
@@ -132,7 +134,8 @@ impl TGAImage {
     }
   }
 
-  pub fn write_tga_file(&self, filename: &str) -> io::Result<()> {
+  pub fn write_tga_file<P>(&self, filename: P) -> io::Result<()>
+  where P: AsRef<Path>, {
     let mut file = File::create(filename).unwrap();
     let header = TGAHeader {
       image_type: 2,
