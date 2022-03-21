@@ -22,14 +22,16 @@ impl Vector3D {
 
 impl fmt::Display for Vector3D {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "({}, {}, {})", self.x, self.y, self.z)
+    write!(f, "(x={}, y={}, z={})", self.x, self.y, self.z)
   }
 }
+
+type Face = [i32; 3];
 
 #[derive(Debug)]
 pub struct Model {
   pub vertices: Vec<Vector3D>,
-  pub faces: Vec<[i32; 3]>,
+  pub faces: Vec<Face>,
 }
 
 impl Model {
@@ -52,7 +54,7 @@ impl Model {
             splitted[3].parse().unwrap(),
           ));
         } else if line.starts_with("f ") {
-          let mut face: [i32; 3] = [1, 1, 1];
+          let mut face: Face = [1, 1, 1];
           let splitted: Vec<&str> = line.split_whitespace().collect();
           for i in 0..3 {
             face[i] = splitted[i + 1].split("/").next().unwrap().parse().unwrap();
@@ -67,6 +69,22 @@ impl Model {
       vertices,
       faces,
     }
+  }
+
+  pub fn n_vertices(&self) -> usize {
+    self.vertices.len()
+  }
+
+  pub fn n_faces(&self) -> usize {
+    self.faces.len()
+  }
+
+  pub fn face(&self, idx: usize) -> &Face {
+    &self.faces[idx]
+  }
+
+  pub fn vertex(&self, idx: usize) -> &Vector3D {
+   &self.vertices[idx]
   }
 }
 

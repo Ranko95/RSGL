@@ -53,13 +53,15 @@ impl TGAImage {
     }
   }
 
-  pub fn set(&mut self, x: i32, y: i32, color: TGAColor) -> Result<(), &str> {
+  pub fn set(&mut self, x: i32, y: i32, color: TGAColor) -> () {
+    if x < 0 || y < 0 {
+      return;
+    }
     if x >= self.width || y >= self.height {
-      return Err("x and y must be within initial image boundaries");
+      return;
     }
 
     self.data[(x + y * self.width) as usize] = color;
-    Ok(())
   }
 
   // TODO! Optimize the algorithm. Now O(n) is n^2.
@@ -75,7 +77,7 @@ impl TGAImage {
     }
   }
 
-  pub fn draw_line(&mut self, x0: i32, y0: i32, x1: i32, y1: i32, color: TGAColor) {
+  pub fn draw_line(&mut self, x0: i32, y0: i32, x1: i32, y1: i32, color: TGAColor) -> () {
     let mut dx = x1 - x0;
     let mut dy = y1 - y0;
 
@@ -102,7 +104,7 @@ impl TGAImage {
     let mut x = x0;
     let mut y = y0;
 
-    self.set(x, y, color).unwrap();
+    self.set(x, y, color);
 
     if dx > dy {
       let mut p = dy - (dx >> 1);
@@ -115,7 +117,7 @@ impl TGAImage {
         }
         p += dy;
 
-        self.set(x, y, color).unwrap();
+        self.set(x, y, color);
       }
     } else {
       let mut p = dx - (dy >> 1);
@@ -129,7 +131,7 @@ impl TGAImage {
         }
         p += dx;
 
-        self.set(x, y, color).unwrap();
+        self.set(x, y, color);
       }
     }
   }
