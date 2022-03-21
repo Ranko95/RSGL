@@ -134,7 +134,7 @@ impl TGAImage {
     }
   }
 
-  pub fn write_tga_file<P>(&self, filename: P) -> io::Result<()>
+  pub fn write_tga_file<P>(&self, filename: &P) -> io::Result<()>
   where P: AsRef<Path>, {
     let mut file = File::create(filename).unwrap();
     let header = TGAHeader {

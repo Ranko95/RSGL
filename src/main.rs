@@ -1,7 +1,9 @@
 mod image;
 mod model;
 
+use std::path::Path;
 use image::{ TGAColor, TGAImage };
+use model::{ Model };
 
 fn main() {
     const RED: TGAColor = TGAColor(255, 0, 0, 255);
@@ -11,5 +13,7 @@ fn main() {
     image.draw_line(13, 20, 80, 40, WHITE);
     image.draw_line(20, 13, 40, 80, RED);
     image.draw_line(80, 40, 13, 20, RED);
-    image.write_tga_file("output.tga").unwrap();
+    image.write_tga_file(&Path::new("output.tga")).unwrap();
+
+    let model = Model::new(&Path::new("obj/african_head.obj"));
 }
