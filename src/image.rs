@@ -5,6 +5,7 @@ use std::io::{ self };
 use std::path::Path;
 
 use crate::model::Model;
+use crate::util::Vec2i;
 
 #[derive(Copy, Clone, Debug)]
 pub struct TGAColor(pub u8, pub u8, pub u8, pub u8);
@@ -79,9 +80,9 @@ impl TGAImage {
     }
   }
 
-  pub fn draw_line(&mut self, x0: i32, y0: i32, x1: i32, y1: i32, color: TGAColor) -> () {
-    let mut dx = x1 - x0;
-    let mut dy = y1 - y0;
+  pub fn draw_line(&mut self, p0: &Vec2i, p1: &Vec2i, color: TGAColor) -> () {
+    let mut dx = p1.x - p0.x;
+    let mut dy = p1.y - p0.y;
 
     let mut step_x = 0;
     let mut step_y = 0;
@@ -103,15 +104,15 @@ impl TGAImage {
     dx <<= 1;
     dy <<= 1;
 
-    let mut x = x0;
-    let mut y = y0;
+    let mut x = p0.x;
+    let mut y = p0.y;
 
     self.set(x, y, color);
 
     if dx > dy {
       let mut p = dy - (dx >> 1);
 
-      while x != x1 {
+      while x != p1.x {
         x += step_x;
         if p >= 0 {
           y += step_y;
@@ -124,7 +125,7 @@ impl TGAImage {
     } else {
       let mut p = dx - (dy >> 1);
 
-      while y != y1 {
+      while y != p1.y {
         y += step_y;
 
         if p >= 0 {
@@ -136,6 +137,12 @@ impl TGAImage {
         self.set(x, y, color);
       }
     }
+  }
+
+  pub fn draw_triangle(&mut self, t0: &Vec2i, t1: &Vec2i, t2: &Vec2i, color: TGAColor) -> () {
+    self.draw_line(t0, t1, color);
+    self.draw_line(t1, t2, color);
+    self.draw_line(t2, t0, color);
   }
 
   pub fn write_tga_file<P>(&self, filename: &P) -> io::Result<()>
@@ -170,7 +177,10 @@ impl TGAImage {
         let x1 = ((v1.x + 1.) * half_width) as i32;
         let y1 = ((v1.y + 1.) * half_height) as i32;
 
-        self.draw_line(x0, y0, x1, y1, color);
+        let p0 = Vec2i::new(x0, y0);
+        let p1 = Vec2i::new(x1, y1);
+
+        self.draw_line(&p0, &p1, color);
       }
     }
 
