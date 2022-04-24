@@ -1,6 +1,5 @@
 use std::fs::File;
 use std::io::Write;
-use std::{ slice, mem };
 use std::io::{ self };
 use std::path::Path;
 
@@ -9,6 +8,10 @@ use crate::geometry::{
   Vector2D,
   find_triangle_bounding_box,
   is_in_triangle,
+};
+use crate::utils::{
+  slice_to_u8_slice,
+  struct_to_u8_slice,
 };
 
 #[derive(Copy, Clone, Debug)]
@@ -29,18 +32,6 @@ struct TGAHeader {
   height: u16,
   pixel_depth: u8,
   image_descriptor: u8,
-}
-
-unsafe fn struct_to_u8_slice<T>(s: &T) -> &[u8] {
-  let data_ptr: *const u8 = mem::transmute(s);
-  let slice = slice::from_raw_parts(data_ptr, mem::size_of::<T>());
-  slice
-}
-
-unsafe fn slice_to_u8_slice<T>(s: &[T]) -> &[u8] {
-  let data_ptr: *const u8 = mem::transmute(&s[0]);
-  let slice = slice::from_raw_parts(data_ptr, mem::size_of::<T>() * s.len());
-  slice
 }
 
 #[derive(Debug)]

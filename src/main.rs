@@ -1,6 +1,7 @@
 mod image;
 mod model;
 mod geometry;
+mod utils;
 
 use std::path::Path;
 use image::{ TGAColor, TGAImage };
