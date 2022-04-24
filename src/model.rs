@@ -2,13 +2,13 @@ use std::fs::File;
 use std::io::{ self, BufRead };
 use std::path::Path;
 
-use crate::util::Vec3f;
+use crate::geometry::Vector3D;
 
 type Face = [i32; 3];
 
 #[derive(Debug)]
 pub struct Model {
-  pub vertices: Vec<Vec3f>,
+  pub vertices: Vec<Vector3D<f32>>,
   pub faces: Vec<Face>,
 }
 
@@ -19,14 +19,14 @@ impl Model {
     let reader = io::BufReader::new(file);
     let lines = reader.lines();
 
-    let mut vertices: Vec<Vec3f> = Vec::new();
-    let mut faces: Vec<[i32; 3]> = Vec::new();
+    let mut vertices: Vec<Vector3D<f32>> = Vec::new();
+    let mut faces: Vec<Face> = Vec::new();
 
     for line in lines {
       if let Ok(line) = line {
         if line.starts_with("v ") {
           let splitted: Vec<&str> = line.split_whitespace().collect();
-          vertices.push(Vec3f::new(
+          vertices.push(Vector3D::new(
             splitted[1].parse().unwrap(),
             splitted[2].parse().unwrap(),
             splitted[3].parse().unwrap(),
@@ -61,7 +61,7 @@ impl Model {
     &self.faces[idx]
   }
 
-  pub fn vertex(&self, idx: usize) -> &Vec3f {
+  pub fn vertex(&self, idx: usize) -> &Vector3D<f32> {
    &self.vertices[idx]
   }
 }

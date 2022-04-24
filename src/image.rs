@@ -5,7 +5,11 @@ use std::io::{ self };
 use std::path::Path;
 
 use crate::model::Model;
-use crate::util::Vec2i;
+use crate::geometry::{
+  Vector2D,
+  find_triangle_bounding_box,
+  is_in_triangle,
+};
 
 #[derive(Copy, Clone, Debug)]
 pub struct TGAColor(pub u8, pub u8, pub u8, pub u8);
@@ -56,7 +60,7 @@ impl TGAImage {
     }
   }
 
-  pub fn set(&mut self, x: i32, y: i32, color: TGAColor) -> () {
+  pub fn set_point(&mut self, x: i32, y: i32, color: TGAColor) -> () {
     if x < 0 || y < 0 {
       return;
     }
@@ -80,7 +84,12 @@ impl TGAImage {
     }
   }
 
-  pub fn draw_line(&mut self, p0: &Vec2i, p1: &Vec2i, color: TGAColor) -> () {
+  pub fn draw_line(
+    &mut self,
+    p0: &Vector2D<i32>,
+    p1: &Vector2D<i32>,
+    color: TGAColor,
+  ) -> () {
     let mut dx = p1.x - p0.x;
     let mut dy = p1.y - p0.y;
 
@@ -107,7 +116,7 @@ impl TGAImage {
     let mut x = p0.x;
     let mut y = p0.y;
 
-    self.set(x, y, color);
+    self.set_point(x, y, color);
 
     if dx > dy {
       let mut p = dy - (dx >> 1);
@@ -120,7 +129,7 @@ impl TGAImage {
         }
         p += dy;
 
-        self.set(x, y, color);
+        self.set_point(x, y, color);
       }
     } else {
       let mut p = dx - (dy >> 1);
@@ -134,15 +143,33 @@ impl TGAImage {
         }
         p += dx;
 
-        self.set(x, y, color);
+        self.set_point(x, y, color);
       }
     }
   }
 
-  pub fn draw_triangle(&mut self, t0: &Vec2i, t1: &Vec2i, t2: &Vec2i, color: TGAColor) -> () {
-    self.draw_line(t0, t1, color);
-    self.draw_line(t1, t2, color);
-    self.draw_line(t2, t0, color);
+  pub fn draw_triangle(
+    &mut self,
+    t0: Vector2D<i32>,
+    t1: Vector2D<i32>,
+    t2: Vector2D<i32>,
+    color: TGAColor,
+  ) -> () {
+    let [top_left, bottom_right] = find_triangle_bounding_box(&t0, &t1, &t2);
+
+    let mut x = top_left.x;
+    let mut y = bottom_right.y;
+  
+    while x <= bottom_right.x {
+      while y <= top_left.y {
+        if is_in_triangle(&Vector2D::new(x, y), &t0, &t1, &t2) {
+          self.set_point(x, y, color);
+        }
+        y += 1;
+      }
+      y = bottom_right.y;
+      x += 1;
+    }
   }
 
   pub fn write_tga_file<P>(&self, filename: &P) -> io::Result<()>
@@ -177,8 +204,8 @@ impl TGAImage {
         let x1 = ((v1.x + 1.) * half_width) as i32;
         let y1 = ((v1.y + 1.) * half_height) as i32;
 
-        let p0 = Vec2i::new(x0, y0);
-        let p1 = Vec2i::new(x1, y1);
+        let p0 = Vector2D::new(x0, y0);
+        let p1 = Vector2D::new(x1, y1);
 
         self.draw_line(&p0, &p1, color);
       }
