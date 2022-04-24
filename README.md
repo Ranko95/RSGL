@@ -7,11 +7,11 @@ To learn basic concepts of computer graphics and understand how OpenGL works und
 
 ## Roadmap
 - [X] Bresenham’s Line Drawing Algorithm
-- [] Triangle rasterization and back face culling
-- [] Hidden faces removal (z-buffer)
-- [] Perspective projection
-- [] Moving the camera
-- [] Shaders for the software renderer
-- [] Tangent space normal mapping
-- [] Shadow mapping
-- [] Ambient occlusion
+- [ ] Triangle rasterization and back face culling
+- [ ] Hidden faces removal (z-buffer)
+- [ ] Perspective projection
+- [ ] Moving the camera
+- [ ] Shaders for the software renderer
+- [ ] Tangent space normal mapping
+- [ ] Shadow mapping
+- [ ] Ambient occlusion
