@@ -5,10 +5,11 @@ use std::path::Path;
 use crate::geometry::Vector3D;
 
 type Face = [i32; 3];
+type Vertex = Vector3D<f32>;
 
 #[derive(Debug)]
 pub struct Model {
-  pub vertices: Vec<Vector3D<f32>>,
+  pub vertices: Vec<Vertex>,
   pub faces: Vec<Face>,
 }
 
@@ -19,7 +20,7 @@ impl Model {
     let reader = io::BufReader::new(file);
     let lines = reader.lines();
 
-    let mut vertices: Vec<Vector3D<f32>> = Vec::new();
+    let mut vertices: Vec<Vertex> = Vec::new();
     let mut faces: Vec<Face> = Vec::new();
 
     for line in lines {
@@ -61,7 +62,7 @@ impl Model {
     &self.faces[idx]
   }
 
-  pub fn vertex(&self, idx: usize) -> &Vector3D<f32> {
+  pub fn vertex(&self, idx: usize) -> &Vertex {
    &self.vertices[idx]
   }
 }

@@ -8,6 +8,7 @@ use crate::geometry::{
   Vector2D,
   find_triangle_bounding_box,
   is_in_triangle,
+  barycentric,
 };
 use crate::utils::{
   slice_to_u8_slice,
@@ -141,21 +142,22 @@ impl TGAImage {
 
   pub fn draw_triangle(
     &mut self,
-    t0: Vector2D<i32>,
-    t1: Vector2D<i32>,
-    t2: Vector2D<i32>,
+    pts: [Vector2D<i32>; 3],
     color: TGAColor,
   ) -> () {
-    let [top_left, bottom_right] = find_triangle_bounding_box(&t0, &t1, &t2);
+    let [top_left, bottom_right] = find_triangle_bounding_box(&pts);
 
     let mut x = top_left.x;
     let mut y = bottom_right.y;
   
     while x <= bottom_right.x {
       while y <= top_left.y {
-        if is_in_triangle(&Vector2D::new(x, y), &t0, &t1, &t2) {
+        let bc_screen = barycentric(Vector2D::new(x, y), pts);
+
+        if bc_screen.x >= 0.0 && bc_screen.y >= 0.0 && bc_screen.z >= 0.0 {
           self.set_point(x, y, color);
         }
+
         y += 1;
       }
       y = bottom_right.y;
@@ -187,19 +189,25 @@ impl TGAImage {
     for i in 0..model.n_faces() {
       let face = model.face(i);
 
+      let mut pts: [Vector2D<i32>; 3] = [Vector2D::new(0, 0); 3];
+
       for j in 0..3 {
         let v0 = model.vertex(face[j] as usize);
-        let v1 = model.vertex(face[(j + 1) % 3] as usize);
+        // let v1 = model.vertex(face[(j + 1) % 3] as usize);
         let x0 = ((v0.x + 1.) * half_width) as i32;
         let y0 = ((v0.y + 1.) * half_height) as i32;
-        let x1 = ((v1.x + 1.) * half_width) as i32;
-        let y1 = ((v1.y + 1.) * half_height) as i32;
+        // let x1 = ((v1.x + 1.) * half_width) as i32;
+        // let y1 = ((v1.y + 1.) * half_height) as i32;
 
         let p0 = Vector2D::new(x0, y0);
-        let p1 = Vector2D::new(x1, y1);
+        // let p1 = Vector2D::new(x1, y1);
+        
+        pts[j] = p0;
 
-        self.draw_line(&p0, &p1, color);
+        // self.draw_line(&p0, &p1, color);
       }
+
+      self.draw_triangle(pts, color);
     }
 
     self.write_tga_file(&Path::new("output.tga")).unwrap();
