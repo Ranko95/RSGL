@@ -73,6 +73,19 @@ impl<T> Vector3D<T> {
   }
 }
 
+impl Vector3D<f32> {
+  pub fn norm(self) -> f32 {
+    (self.x * self.x + self.y * self.y + self.z * self.z).sqrt()
+  }
+
+  pub fn normalize(self) -> Vector3D<f32> {
+    let length = self.norm();
+    let inv_length = 1. / length;
+
+    self * inv_length
+  }
+}
+
 impl<T: fmt::Display> fmt::Display for Vector3D<T> {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "(x={}, y={}, z={})", self.x, self.y, self.z)
