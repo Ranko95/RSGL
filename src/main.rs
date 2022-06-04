@@ -2,18 +2,22 @@ mod image;
 mod model;
 mod geometry;
 mod utils;
+mod gl;
 
 use std::path::Path;
-use image::{ TGAImage };
+use image::{ Image };
 use model::{ Model };
+use gl::{ GL };
 
 const WIDTH: i32 = 800;
 const HEIGHT: i32 = 800;
 
 fn main() {
-    let mut image = TGAImage::new(WIDTH, HEIGHT);
+  let image = Image::new(WIDTH, HEIGHT);
 
-    let model = Model::new(&Path::new("obj/african_head.obj"));
+  let mut gl = GL::new(image);
 
-    image.render(&model);
+  let model = Model::new(&Path::new("obj/african_head.obj"));
+
+  gl.render(&model);
 }
